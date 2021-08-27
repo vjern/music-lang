@@ -1,214 +1,119 @@
-## Message
+# Music Lang
 
-\<note>[/<durée>]
-
-## Setter
-
-Starts with `!`
+A draft of a language to ~~program~~ write music ! (and dump it to MIDI format using [mido]())
 
 ```c
-!<note> // Set the default reference note
-!<durée> // Set the default duration
+// starting from a3
+c c g g a a g  // whitespace is ignored
+f f e e d d c  // can you guess the tune ? 
 ```
 
-## Notes
+Only the above works for now, future features are listed below.
 
-soit les noms germaniques (a-h)
-soit les noms français (do-si)
+## How to use
 
-par défaut `a3`
-
-un vrai nom de note:
+Clone this repo and do
 
 ```
-a3
-b4
-a b c d e f g [h]
-do re mi fa sol la si
+python -m midi <my-text-file>
 ```
 
-et le programme devrait deviner quelle note jouer d'après la dernière en date si aucune octave fournie
+to generate a .mid file that you can then read with your favorite media player.
 
-### Altérations
+## Rhythm
 
+Each note has a duration. The default duration is 1, == a **noire**.
+
+Follows that:
+
+* 1/2 une `croche`;
+* 1/4 une `double`;
+* 2 une `blanche`;
+
+
+and so on. You can set a specific note's duration with `<note>/<duration>`:
+
+```c
+c c g g a a g/2
+f f e e d d c/2
 ```
-a_b
-a_bb
-a_#
-a_##
+
+Add a dot at the end of the duration to eg have a croche pointée:
+
+```c
+g/1/2.
 ```
 
-## Durées
+## Alterations
 
-par défaut 1 (noire)
+Simply `<note>_[b#]`:
 
-1 noire
+```c
+c_b
+c_#
+```
 
-puis des subdivisions:
+## Blocks
 
-1/2 croche
-1/4 double
+Blocks allow you to control default duration & reference frequency as you would scopes:
 
-etc
-
-.2, .4 for shorthand
+```c
+{
+    !/2  // set the default duration to croche for this block
+    c c g g
+}
+```
 
 ## Repetitions
 
 ```c
-<note> * 2
-{ <note> <note> } * 2
+a * 3 // repeat notes
+{ a a } * 3 // or entire blocks
 ```
 
-## Boucles
+## Loops
 
 ```c
-loop X { // repeat X times
-
+loop 35 times {
+    c c g g
 }
 ```
 
-## "Functions" == Phrases
+## Phrases
+
+Describe and reuse phrases here and there!
 
 ```c
-phrase phraseName {
-
+theme = {
+    !/1
+    c c g g a a g/2
+    f f e e d d c/2
 }
 
-// eg
+couplet = { g g f f e e d/2 }
 
-phrase mainTheme {
-    !a3 !.2 // those are local to the function / loop / block
-    a a
-    b b
-}
-
+theme
+couplet
+couplet
+theme
 ```
 
-## Mesures
+## Plusieurs portées ?
 
-Maybe we could enforce the writing of separate "mesures" as in:
+Plusieurs fichiers duh
+
+Ou sinon 
 
 ```c
-chiffrage 4/4
-chiffrage C
-
-// One line == one mesure
-
-{ a a b b }
-{ !*2 b+ b- }
-
-chiffrage 6/4
-
+// Portée 1
+a a b b
+---
+// Portée 2
+c c d d
 ```
 
-## Armure
+## Plusieurs voix sur une meme portée ?
 
-```c
-armure 3b // 3 bemols (b e a)
-armure 3# // 3 dièses (f c g)
-// or
-ton c maj // do majeur
-ton c // default to maj
-ton c flat // == maj
-ton c moll // == min
-```
+Ideas welcome
 
-## Accords, Arpèges
-
-Renversements
-
-```
-ton c maj
-[I III V I]
-[VII]
-```
-
-## Grammar
-
-
-```c#
-lex {
-    SET_OP = "!"
-    REP_OP = "*"
-    SLASH_OP = "/"
-    DOT_OP = "."
-    ONE_LITERAL = "1"
-    NUMBER_LITERAL = "\d+"
-    NOTE_NAME = "[a-e]|do|re|ré|mi|fa|sol|la|si"
-}
-
-PROG = INSTRUCTION*
-
-INSTRUCTION =
-| EXPR
-| LOOP
-| PHRASE
-
-EXPR =
-| SETTER
-| BLOCK
-| NOTE
-| NOTE SLASH_OP DURATION
-| EXPR REP_OP NUMBER_LITERAL
-
-SETTER = SET_OP SET_CLAUSE
-
-SET_CLAUSE =
-| REP_OP NUMBER_LITERAL
-| DURATION
-| NOTE
-
-DURATION =
-| NUMBER_LITERAL
-| ONE_LITERAL ~ SLASH_OP ~ NUMBER_LITERAL
-| DOT_OP ~ NUMBER_LITERAL
-
-NOTE =
-| NOTE_NAME
-| NOTE_NAME ~ NUMBER_LITERAL
-| NOTE ~ UNDERSCORE_OP ~ b
-| NOTE ~ UNDERSCORE_OP ~ #
-```
-
-## Transposition
-
-```
-phrase = { a b | b c }
-phrase = transpose phrase +
-```
-
-## Marches harmoniques
-
-## Complexes / Rythmes custom
-
-```c
-// Triolet sur noire
-
-// Or lets try to create the imperial march!
-// Un sixtolet avec une croche pointée et 3 double croches
-// En ternaire (12/8)
-!1. // rythme par défaut = noire pointée
-!a3
-a
-a/.2.  // Peut etre que le point pourrait s'activer par défaut ? mauvaise idée en fait
--/.4. * 3  // - pour meme note ?
--/.2.
--/.4. * 3
--/.4. * 3
--/.2.
-
-// How can we make this into a reusable rythm ?
-// make it a phrase and transpose it maybe
-
-rolling = { a { a/.2. a/.4 * 3 } * 2 a/.4 * 3 a/.2 }
-
-// play <var> <transposition info> (will be appended beforehand)
-play rolling + // Play it an octave higher
-play rolling 2 // Play it 2 half-tons higher
-play rolling 4 // Play it 2 tons higher
-
-play rolling +
-// can be shortened to
-$(rolling +)
-```
+See more unstructured [ideas](IDEAS.md).
