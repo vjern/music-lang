@@ -6,10 +6,9 @@
 
 Starts with `!`
 
-```
+```c
 !<note> // Set the default reference note
 !<durée> // Set the default duration
-
 ```
 
 ## Notes
@@ -25,7 +24,7 @@ un vrai nom de note:
 a3
 b4
 a b c d e f g [h]
-do re ré mi fa sol la si
+do re mi fa sol la si
 ```
 
 et le programme devrait deviner quelle note jouer d'après la dernière en date si aucune octave fournie
@@ -34,7 +33,9 @@ et le programme devrait deviner quelle note jouer d'après la dernière en date 
 
 ```
 a_b
+a_bb
 a_#
+a_##
 ```
 
 ## Durées
@@ -51,6 +52,13 @@ puis des subdivisions:
 etc
 
 .2, .4 for shorthand
+
+## Repetitions
+
+```c
+<note> * 2
+{ <note> <note> } * 2
+```
 
 ## Boucles
 
@@ -111,7 +119,96 @@ ton c moll // == min
 Renversements
 
 ```
-a&[V/I]
+ton c maj
+[I III V I]
+[VII]
+```
+
+## Grammar
+
+
+```c#
+lex {
+    SET_OP = "!"
+    REP_OP = "*"
+    SLASH_OP = "/"
+    DOT_OP = "."
+    ONE_LITERAL = "1"
+    NUMBER_LITERAL = "\d+"
+    NOTE_NAME = "[a-e]|do|re|ré|mi|fa|sol|la|si"
+}
+
+PROG = INSTRUCTION*
+
+INSTRUCTION =
+| EXPR
+| LOOP
+| PHRASE
+
+EXPR =
+| SETTER
+| BLOCK
+| NOTE
+| NOTE SLASH_OP DURATION
+| EXPR REP_OP NUMBER_LITERAL
+
+SETTER = SET_OP SET_CLAUSE
+
+SET_CLAUSE =
+| REP_OP NUMBER_LITERAL
+| DURATION
+| NOTE
+
+DURATION =
+| NUMBER_LITERAL
+| ONE_LITERAL ~ SLASH_OP ~ NUMBER_LITERAL
+| DOT_OP ~ NUMBER_LITERAL
+
+NOTE =
+| NOTE_NAME
+| NOTE_NAME ~ NUMBER_LITERAL
+| NOTE ~ UNDERSCORE_OP ~ b
+| NOTE ~ UNDERSCORE_OP ~ #
+```
+
+## Transposition
+
+```
+phrase = { a b | b c }
+phrase = transpose phrase +
 ```
 
 ## Marches harmoniques
+
+## Complexes / Rythmes custom
+
+```c
+// Triolet sur noire
+
+// Or lets try to create the imperial march!
+// Un sixtolet avec une croche pointée et 3 double croches
+// En ternaire (12/8)
+!1. // rythme par défaut = noire pointée
+!a3
+a
+a/.2.  // Peut etre que le point pourrait s'activer par défaut ? mauvaise idée en fait
+-/.4. * 3  // - pour meme note ?
+-/.2.
+-/.4. * 3
+-/.4. * 3
+-/.2.
+
+// How can we make this into a reusable rythm ?
+// make it a phrase and transpose it maybe
+
+rolling = { a { a/.2. a/.4 * 3 } * 2 a/.4 * 3 a/.2 }
+
+// play <var> <transposition info> (will be appended beforehand)
+play rolling + // Play it an octave higher
+play rolling 2 // Play it 2 half-tons higher
+play rolling 4 // Play it 2 tons higher
+
+play rolling +
+// can be shortened to
+$(rolling +)
+```

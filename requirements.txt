@@ -1,1 +1,3 @@
 mido
+# git+ssh://git@github.com:vjern/toksic.git
+git+file:///home/jocelynvernay/projects/experiments/toksic
