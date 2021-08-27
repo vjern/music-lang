@@ -20,6 +20,19 @@ python -m midi <my-text-file>
 
 to generate a .mid file that you can then read with your favorite media player.
 
+## Notes
+
+Notes are single-letter symbols using their anglo-saxon names (A-G == from la to sol). You can add the exact octave to play:
+
+```c
+// a3 is default
+a 
+// == 
+a3
+```
+
+If no octave is provided, the interpreter will deduce one from the default note reference (a3 by default).
+
 ## Rhythm
 
 Each note has a duration. The default duration is 1, == a **noire**.
