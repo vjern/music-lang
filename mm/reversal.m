@@ -1,6 +1,6 @@
 // 
 !/1.
-f = { !/2 r r/4 * 3 }
-imperial_march = { a a/f a/f g/rev(f) }
+f = { r/2. r/4 * 3 }
+im = { a a/f * 2 g/f~ } // imperial march ground
 
-$(imperial_march)
+im

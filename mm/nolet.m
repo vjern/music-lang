@@ -8,3 +8,5 @@
 // with explicit duration
 // 3-olet over a croche
 <3:1/2 a>
+
+a/2^3 // is all in all simpler

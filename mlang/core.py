@@ -92,3 +92,24 @@ def parse(text: str):
         track.append(lex(token))
 
     return Track(track)
+
+
+def compile(text: str):
+    tokens = tokenize(text)
+    track = []
+    for token in  tokens:
+        track.append(lex(token))
+
+    track = Track(track)
+
+    data = [
+        {
+            'track': 1,
+            'note': note.name,
+            'duration': '1',
+            'n': 1
+        }
+        for note in track.units
+    ]
+
+    return data
