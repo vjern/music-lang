@@ -28,5 +28,5 @@ const play = () => {
     .then(playAudio)
 }
 
-$('#textarea').addEventListener('keypress', onCtrlEnter.bind(null, playAudio));
+$('#textarea').addEventListener('keypress', onCtrlEnter.bind(null, play));
 $('#play').addEventListener('click', play);
