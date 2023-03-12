@@ -7,13 +7,17 @@ import toksic
 
 def tokenize(text: str):
 
-    for row in text.split('\n'):
+    for i, row in enumerate(text.split('\n')):
 
         if not row.strip() or row.strip().startswith('//'):
             continue
 
         tokens = toksic.tokenize(row, toksic.Trie().init(['//', '=>']))
+        tokens = list(toksic.split(tokens, '//'))[0]
         print(tokens)
+
+        for token in tokens:
+            token.lineno = i
 
         yield from tokens
 
@@ -29,6 +33,7 @@ class Notes:
     @classmethod
     def make(cls, name: str, h: int):
         return cls.A0 + dodeca(name) + h * 12
+
 
 def dodeca(name: str) -> int:
     return 'aabccddeffg'.index(name)
